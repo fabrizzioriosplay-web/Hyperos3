@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bloqueo de Seguridad</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #000;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .screen {
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h2 { font-weight: 300; margin-bottom: 30px; }
+
+        /* Simulación de Huella Digital */
+        .fingerprint-container {
+            width: 100px;
+            height: 100px;
+            margin: 40px auto;
+            border: 2px solid #007bff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            transition: transform 0.2s;
+        }
+
+        .fingerprint-container:active {
+            transform: scale(0.9);
+            background-color: rgba(0, 123, 255, 0.2);
+        }
+
+        .fingerprint-icon {
+            font-size: 50px;
+            filter: grayscale(1);
+        }
+
+        .scanning-line {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: #007bff;
+            top: 0;
+            left: 0;
+            box-shadow: 0 0 15px #007bff;
+            animation: scan 2s infinite ease-in-out;
+            display: none;
+        }
+
+        @keyframes scan {
+            0% { top: 0; }
+            50% { top: 100%; }
+            100% { top: 0; }
+        }
+
+        /* Teclado de PIN */
+        .pin-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            padding: 20px;
+        }
+
+        .pin-btn {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: 1px solid #444;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .pin-btn:hover { background: rgba(255,255,255,0.2); }
+
+        .status-msg {
+            margin-top: 20px;
+            height: 20px;
+            color: #ff4444;
+            font-size: 14px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="screen" id="lockScreen">
+        <h2 id="msg">Dispositivo Bloqueado</h2>
+        
+        <div class="fingerprint-container" onmousedown="startScan()" onmouseup="stopScan()" ontouchstart="startScan()" ontouchend="stopScan()">
+            <div class="scanning-line" id="scanner"></div>
+            <span class="fingerprint-icon">☝️</span>
+        </div>
+        <p style="color: #888;">Mantén presionado para usar huella</p>
+
+        <hr style="width: 50%; border: 0.5px solid #333; margin: 30px auto;">
+
+        <div class="pin-grid">
+            <button class="pin-btn" onclick="pressKey(1)">1</button>
+            <button class="pin-btn" onclick="pressKey(2)">2</button>
+            <button class="pin-btn" onclick="pressKey(3)">3</button>
+            <button class="pin-btn" onclick="pressKey(4)">4</button>
+            <button class="pin-btn" onclick="pressKey(5)">5</button>
+            <button class="pin-btn" onclick="pressKey(6)">6</button>
+            <button class="pin-btn" onclick="pressKey(7)">7</button>
+            <button class="pin-btn" onclick="pressKey(8)">8</button>
+            <button class="pin-btn" onclick="pressKey(9)">9</button>
+            <div></div>
+            <button class="pin-btn" onclick="pressKey(0)">0</button>
+            <button class="pin-btn" style="font-size: 16px;" onclick="clearPin()">C</button>
+        </div>
+        
+        <div class="status-msg" id="status"></div>
+    </div>
+
+    <script>
+        let pinInput = "";
+        const correctPin = "1234"; // Puedes cambiar el PIN aquí
+
+        function startScan() {
+            document.getElementById('scanner').style.display = 'block';
+            document.getElementById('status').innerText = "Escaneando...";
+            document.getElementById('status').style.color = "#007bff";
+            
+            // Simulación de éxito tras 1.5 segundos
+            window.scanTimeout = setTimeout(() => {
+                unlock();
+            }, 1500);
+        }
+
+        function stopScan() {
+            document.getElementById('scanner').style.display = 'none';
+            clearTimeout(window.scanTimeout);
+            if(document.getElementById('msg').innerText !== "Acceso Concedido") {
+                document.getElementById('status').innerText = "Escaneo fallido";
+                document.getElementById('status').style.color = "#ff4444";
+            }
+        }
+
+        function pressKey(num) {
+            pinInput += num;
+            document.getElementById('status').innerText = "PIN: " + "*".repeat(pinInput.length);
+            
+            if (pinInput.length === 4) {
+                if (pinInput === correctPin) {
+                    unlock();
+                } else {
+                    document.getElementById('status').innerText = "PIN Incorrecto";
+                    pinInput = "";
+                }
+            }
+        }
+
+        function clearPin() {
+            pinInput = "";
+            document.getElementById('status').innerText = "";
+        }
+
+        function unlock() {
+            document.getElementById('msg').innerText = "Acceso Concedido";
+            document.getElementById('msg').style.color = "#44ff44";
+            document.getElementById('status').innerText = "Bienvenido";
+            document.getElementById('status').style.color = "#44ff44";
+            // Aquí podrías redirigir a tu otra página:
+            // window.location.href = "iconos.html";
+        }
+    </script>
+
+</body>
+</html>
