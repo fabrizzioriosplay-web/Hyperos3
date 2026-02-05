@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hype OS - Animaciones</title>
+    <style>
+        :root {
+            /* Variable dinámica para la velocidad (por defecto 1s) */
+            --speed: 0.5s;
+            --bg-color: #1a1a1a;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        /* --- ESTILOS DEL ICONO --- */
+        .app-container {
+            position: relative;
+            text-align: center;
+        }
+
+        .app-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(45deg, #ff0055, #ffcc00);
+            border-radius: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            cursor: pointer;
+            /* Aquí ocurre la magia de la animación */
+            transition: transform var(--speed) ease-in-out, 
+                        filter var(--speed) ease-in-out, 
+                        opacity var(--speed) ease-in-out;
+        }
+
+        /* Estado de Apertura: Grande, Borroso y Desvanecido */
+        .app-icon.opening {
+            transform: scale(8);
+            filter: blur(15px);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* --- CONTENIDO DE LA APP --- */
+        #app-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #222;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        #app-screen.active {
+            display: flex;
+            animation: fadeIn var(--speed) forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* --- PANEL DE CONFIGURACIÓN --- */
+        .config-panel {
+            position: absolute;
+            bottom: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            text-align: center;
+        }
+
+        select, button {
+            padding: 8px;
+            border-radius: 5px;
+            border: none;
+            margin: 5px;
+            cursor: pointer;
+        }
+
+        .preview-text {
+            font-size: 12px;
+            color: #aaa;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container" id="main-container">
+        <div class="app-icon" id="myIcon" onclick="toggleApp()">
+            🚀
+        </div>
+        <p>Hype App</p>
+    </div>
+
+    <div id="app-screen">
+        <h1>Bienvenido a Hype OS</h1>
+        <p>Esta es tu aplicación abierta.</p>
+        <button onclick="toggleApp()">Cerrar App</button>
+    </div>
+
+    <div class="config-panel">
+        <h3>Configuración de Animación</h3>
+        
+        <label>Velocidad:</label>
+        <select id="speedSelector" onchange="changeSpeed(this.value)">
+            <option value="1">1x (Defecto)</option>
+            <option value="1.5">1.5x</option>
+            <option value="2">2x</option>
+            <option value="3">3x</option>
+            <option value="5">5x</option>
+            <option value="10">10x (Muy Lento)</option>
+            <option value="0">Desactivar</option>
+        </select>
+
+        <p class="preview-text" id="statusText">Velocidad actual: 1x (0.5s)</p>
+    </div>
+
+    <script>
+        let isOpen = false;
+        let animationsEnabled = true;
+        const baseTime = 0.5; // Tiempo base en segundos
+
+        function changeSpeed(multiplier) {
+            const statusText = document.getElementById('statusText');
+            
+            if (multiplier == 0) {
+                animationsEnabled = false;
+                document.documentElement.style.setProperty('--speed', '0s');
+                statusText.innerText = "Animaciones: Desactivadas";
+            } else {
+                animationsEnabled = true;
+                const finalTime = baseTime * multiplier;
+                // Actualizamos la variable CSS
+                document.documentElement.style.setProperty('--speed', finalTime + 's');
+                statusText.innerText = `Velocidad actual: ${multiplier}x (${finalTime}s)`;
+            }
+        }
+
+        function toggleApp() {
+            const icon = document.getElementById('myIcon');
+            const screen = document.getElementById('app-screen');
+
+            if (!isOpen) {
+                // ABRIR
+                icon.classList.add('opening');
+                setTimeout(() => {
+                    screen.classList.add('active');
+                }, animationsEnabled ? (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--speed')) * 800) : 0);
+                isOpen = true;
+            } else {
+                // CERRAR
+                screen.classList.remove('active');
+                setTimeout(() => {
+                    icon.classList.remove('opening');
+                }, 100); // Pequeño delay para que se vea el regreso
+                isOpen = false;
+            }
+        }
+    </script>
+</body>
+</html>
+          
