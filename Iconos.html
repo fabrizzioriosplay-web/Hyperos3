@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurador de Iconos</title>
+    <style>
+        :root {
+            --icon-size: 60px;
+            --font-size: 14px;
+        }
+
+        body {
+            font-family: sans-serif;
+            background-color: #1a1a1a;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .panel-control {
+            background: #2d2d2d;
+            padding: 20px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 400px;
+            margin-bottom: 20px;
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        select, button {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            margin-top: 5px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Área de Previsualización */
+        .preview-area {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .icon-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 80px;
+        }
+
+        .icon-box {
+            width: var(--icon-size);
+            height: var(--icon-size);
+            background: #444;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            transition: all 0.3s ease;
+        }
+
+        /* Estilos de Sistemas Operativos */
+        .style-hyperos { border-radius: 18px; background: linear-gradient(145deg, #333, #555); }
+        .style-originos { border-radius: 12px; background: #fff; color: #000; }
+        .style-iphone { border-radius: 22%; background: linear-gradient(145deg, #e1e1e1, #fff); }
+
+        .icon-label {
+            margin-top: 8px;
+            font-size: var(--font-size);
+            text-align: center;
+        }
+
+        /* Ocultar etiquetas */
+        .label-hidden { display: none; }
+    </style>
+</head>
+<body>
+
+    <h2>Configuración de Iconos</h2>
+
+    <div class="panel-control">
+        <div class="control-group">
+            <label>Estilo de Sistema:</label>
+            <select id="systemStyle" onchange="updateStyles()">
+                <option value="style-hyperos">Hyper OS 3 (Defecto)</option>
+                <option value="style-originos">Origin OS</option>
+                <option value="style-iphone">iPhone (iOS)</option>
+            </select>
+        </div>
+
+        <div class="control-group">
+            <label>Tamaño de nombres:</label>
+            <select id="labelSize" onchange="updateStyles()">
+                <option value="14px">Grande</option>
+                <option value="10px" selected>Pequeño</option>
+                <option value="none">No mostrar</option>
+            </select>
+        </div>
+
+        <button onclick="sendNotification()">Enviar Notificación al Teléfono</button>
+    </div>
+
+    <div class="preview-area">
+        <div class="icon-container">
+            <div id="iconPreview" class="icon-box style-hyperos">📱</div>
+            <div id="textPreview" class="icon-label" style="font-size: 10px;">Ajustes</div>
+        </div>
+    </div>
+
+    <script>
+        function updateStyles() {
+            const system = document.getElementById('systemStyle').value;
+            const labelSize = document.getElementById('labelSize').value;
+            const icon = document.getElementById('iconPreview');
+            const label = document.getElementById('textPreview');
+
+            // Actualizar estilo del icono
+            icon.className = 'icon-box ' + system;
+
+            // Actualizar tamaño o visibilidad del texto
+            if (labelSize === 'none') {
+                label.classList.add('label-hidden');
+            } else {
+                label.classList.remove('label-hidden');
+                label.style.fontSize = labelSize;
+            }
+        }
+
+        function sendNotification() {
+            // Simulador de notificación del sistema
+            if (!("Notification" in window)) {
+                alert("Este navegador no soporta notificaciones, pero el código funciona.");
+            } else if (Notification.permission === "granted") {
+                new Notification("¡Nueva Notificación!", {
+                    body: "Has presionado el botón desde el configurador de iconos.",
+                    icon: "https://via.placeholder.com/100"
+                });
+            } else {
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        sendNotification();
+                    }
+                });
+            }
+        }
+    </script>
+
+</body>
+  </html>
+  
